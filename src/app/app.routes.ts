@@ -5,6 +5,7 @@ import { LoginComponent } from './features/auth/login.component';
 import { ProviderListComponent } from './features/providers/provider-list.component';
 import { ProviderWizardComponent } from './features/providers/provider-wizard.component';
 import { GatewayTestComponent } from './features/gateway-test/gateway-test.component';
+import { ConsumersComponent } from './features/consumers/consumers.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
       { path: 'providers', component: ProviderListComponent },
       { path: 'providers/new', component: ProviderWizardComponent },
       { path: 'gateway-test', component: GatewayTestComponent },
+      { path: 'consumers', component: ConsumersComponent },
       { path: '', redirectTo: 'providers', pathMatch: 'full' },
     ],
   },

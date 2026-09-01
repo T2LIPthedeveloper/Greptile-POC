@@ -79,10 +79,25 @@ export class ApiService {
     return this.http.post(`${this.base}/credentials`, body);
   }
 
-  linkCredential(providerId: string, versionId: string, credentialId: string) {
-    return this.http.post(`${this.base}/providers/${providerId}/versions/${versionId}/credentials`, {
-      credentialId,
-      usage: 'UPSTREAM_AUTH',
-    });
+  createSubscription(consumerId: string, body: { providerId: string; versionId?: string }) {
+    return this.http.post(`${this.base}/consumers/${consumerId}/subscriptions`, body);
+  }
+
+  publishVersion(providerId: string, versionId: string) {
+    return this.http.post<Version>(`${this.base}/providers/${providerId}/versions/${versionId}/publish`, {});
+  }
+
+  listVersions(providerId: string) {
+    return this.http.get<Version[]>(`${this.base}/providers/${providerId}/versions`);
+  }
+
+  listConsumers() {
+    return this.http.get<{ id: string; slug: string; displayName: string; status: string }[]>(
+      `${this.base}/consumers`
+    );
+  }
+
+  createConsumer(body: { slug: string; displayName: string }) {
+    return this.http.post(`${this.base}/consumers`, body);
   }
 }
