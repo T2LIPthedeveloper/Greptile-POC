@@ -36,18 +36,24 @@ public class VersionService {
     private final McpEndpointRepository endpointRepository;
     private final McpToolContractRepository toolContractRepository;
     private final VersionCredentialRepository versionCredentialRepository;
+    private final ContractValidationService contractValidationService;
+    private final UsageMeteringService usageMeteringService;
 
     public VersionService(
             McpProviderRepository providerRepository,
             McpVersionRepository versionRepository,
             McpEndpointRepository endpointRepository,
             McpToolContractRepository toolContractRepository,
-            VersionCredentialRepository versionCredentialRepository) {
+            VersionCredentialRepository versionCredentialRepository,
+            ContractValidationService contractValidationService,
+            UsageMeteringService usageMeteringService) {
         this.providerRepository = providerRepository;
         this.versionRepository = versionRepository;
         this.endpointRepository = endpointRepository;
         this.toolContractRepository = toolContractRepository;
         this.versionCredentialRepository = versionCredentialRepository;
+        this.contractValidationService = contractValidationService;
+        this.usageMeteringService = usageMeteringService;
     }
 
     public List<VersionResponse> listVersions(UUID providerId) {
@@ -85,10 +91,17 @@ public class VersionService {
         if (endpointRepository.findByVersionId(versionId).isEmpty()) {
             throw new ConflictException("Cannot publish version without endpoint");
         }
+        contractValidationService.assertValidForPublish(versionId);
         version.setStatus(VersionStatus.PUBLISHED);
         version.setPublishedAt(Instant.now());
         versionRepository.save(version);
+        usageMeteringService.record("VERSION_PUBLISHED", "mcp_version", versionId, 1);
         return toResponse(version);
+    }
+
+    public ContractValidationService.ValidationResult validateVersion(UUID providerId, UUID versionId) {
+        findVersion(providerId, versionId);
+        return contractValidationService.validateVersion(versionId);
     }
 
     @Transactional

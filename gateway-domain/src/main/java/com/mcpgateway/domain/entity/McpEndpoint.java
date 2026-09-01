@@ -37,6 +37,12 @@ public class McpEndpoint {
     @Column(name = "is_primary", nullable = false)
     private boolean primary;
 
+    @Column(name = "last_health_status", length = 32)
+    private String lastHealthStatus;
+
+    @Column(name = "last_health_at")
+    private Instant lastHealthAt;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -60,5 +66,9 @@ public class McpEndpoint {
     public void setTimeoutMs(int timeoutMs) { this.timeoutMs = timeoutMs; }
     public boolean isPrimary() { return primary; }
     public void setPrimary(boolean primary) { this.primary = primary; }
+    public String getLastHealthStatus() { return lastHealthStatus; }
+    public void setLastHealthStatus(String lastHealthStatus) { this.lastHealthStatus = lastHealthStatus; }
+    public Instant getLastHealthAt() { return lastHealthAt; }
+    public void setLastHealthAt(Instant lastHealthAt) { this.lastHealthAt = lastHealthAt; }
     public Instant getCreatedAt() { return createdAt; }
 }

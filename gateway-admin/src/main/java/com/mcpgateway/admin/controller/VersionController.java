@@ -7,6 +7,11 @@ import com.mcpgateway.admin.dto.EndpointResponse;
 import com.mcpgateway.admin.dto.LinkCredentialRequest;
 import com.mcpgateway.admin.dto.ToolContractResponse;
 import com.mcpgateway.admin.dto.VersionResponse;
+import com.mcpgateway.admin.dto.ContractDiffResponse;
+import com.mcpgateway.admin.dto.DiscoveredToolResponse;
+import com.mcpgateway.admin.service.ContractDiffService;
+import com.mcpgateway.admin.service.ContractValidationService;
+import com.mcpgateway.admin.service.ToolDiscoveryService;
 import com.mcpgateway.admin.service.VersionService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -23,9 +28,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class VersionController {
 
     private final VersionService versionService;
+    private final ToolDiscoveryService toolDiscoveryService;
+    private final ContractDiffService contractDiffService;
 
-    public VersionController(VersionService versionService) {
+    public VersionController(
+            VersionService versionService,
+            ToolDiscoveryService toolDiscoveryService,
+            ContractDiffService contractDiffService) {
         this.versionService = versionService;
+        this.toolDiscoveryService = toolDiscoveryService;
+        this.contractDiffService = contractDiffService;
     }
 
     @GetMapping
@@ -46,6 +58,29 @@ public class VersionController {
     @PostMapping("/{versionId}/publish")
     public VersionResponse publish(@PathVariable UUID providerId, @PathVariable UUID versionId) {
         return versionService.publishVersion(providerId, versionId);
+    }
+
+    @GetMapping("/{versionId}/validate")
+    public ContractValidationService.ValidationResult validate(
+            @PathVariable UUID providerId, @PathVariable UUID versionId) {
+        return versionService.validateVersion(providerId, versionId);
+    }
+
+    @PostMapping("/{versionId}/discover-tools")
+    public List<DiscoveredToolResponse> discoverTools(
+            @PathVariable UUID providerId, @PathVariable UUID versionId) {
+        versionService.getVersion(providerId, versionId);
+        return toolDiscoveryService.discoverAndImport(versionId);
+    }
+
+    @GetMapping("/{versionId}/diff/{otherVersionId}")
+    public ContractDiffResponse diff(
+            @PathVariable UUID providerId,
+            @PathVariable UUID versionId,
+            @PathVariable UUID otherVersionId) {
+        versionService.getVersion(providerId, versionId);
+        versionService.getVersion(providerId, otherVersionId);
+        return contractDiffService.diff(versionId, otherVersionId);
     }
 
     @PostMapping("/{versionId}/deprecate")
