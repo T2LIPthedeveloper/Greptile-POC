@@ -28,6 +28,10 @@ import { AuthService } from '../core/services/auth.service';
             <mat-icon matListItemIcon>hub</mat-icon>
             <span matListItemTitle>Providers</span>
           </a>
+          <a mat-list-item routerLink="/gateway-test" routerLinkActive="active">
+            <mat-icon matListItemIcon>science</mat-icon>
+            <span matListItemTitle>Gateway Test</span>
+          </a>
         </mat-nav-list>
       </mat-sidenav>
       <mat-sidenav-content>
