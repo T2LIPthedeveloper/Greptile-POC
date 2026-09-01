@@ -52,6 +52,18 @@ import { AuthService } from '../core/services/auth.service';
             <mat-icon matListItemIcon>auto_awesome</mat-icon>
             <span matListItemTitle>Skills</span>
           </a>
+          <a mat-list-item routerLink="/ops" routerLinkActive="active">
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            <span matListItemTitle>Ops</span>
+          </a>
+          <a mat-list-item routerLink="/compliance" routerLinkActive="active">
+            <mat-icon matListItemIcon>verified_user</mat-icon>
+            <span matListItemTitle>Compliance</span>
+          </a>
+          <a mat-list-item routerLink="/determinism" routerLinkActive="active">
+            <mat-icon matListItemIcon>replay</mat-icon>
+            <span matListItemTitle>Determinism</span>
+          </a>
           <a mat-list-item routerLink="/gateway-test" routerLinkActive="active">
             <mat-icon matListItemIcon>science</mat-icon>
             <span matListItemTitle>Gateway Test</span>

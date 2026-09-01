@@ -12,6 +12,9 @@ import { FederationPeersComponent } from './features/federation/federation-peers
 import { AuditLogComponent } from './features/audit/audit-log.component';
 import { ApprovalsComponent } from './features/approvals/approvals.component';
 import { SkillsComponent } from './features/skills/skills.component';
+import { OpsDashboardComponent } from './features/ops/ops-dashboard.component';
+import { ComplianceComponent } from './features/compliance/compliance.component';
+import { DeterminismTestComponent } from './features/skills/determinism-test.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -30,6 +33,9 @@ export const routes: Routes = [
       { path: 'audit', component: AuditLogComponent },
       { path: 'approvals', component: ApprovalsComponent },
       { path: 'skills', component: SkillsComponent },
+      { path: 'ops', component: OpsDashboardComponent },
+      { path: 'compliance', component: ComplianceComponent },
+      { path: 'determinism', component: DeterminismTestComponent },
       { path: '', redirectTo: 'providers', pathMatch: 'full' },
     ],
   },
