@@ -31,6 +31,12 @@ import { ApiService, Provider } from '../../core/services/api.service';
             <mat-chip>{{ p.status }}</mat-chip>
           </td>
         </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let p">
+            <a mat-button routerLink="/providers/{{ p.id }}">Versions</a>
+          </td>
+        </ng-container>
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
         <tr mat-row *matRowDef="let row; columns: columns"></tr>
       </table>
@@ -60,7 +66,7 @@ import { ApiService, Provider } from '../../core/services/api.service';
 export class ProviderListComponent implements OnInit {
   private api = inject(ApiService);
   providers = signal<Provider[]>([]);
-  columns = ['slug', 'displayName', 'status'];
+  columns = ['slug', 'displayName', 'status', 'actions'];
 
   ngOnInit(): void {
     this.api.listProviders().subscribe((list) => this.providers.set(list));
