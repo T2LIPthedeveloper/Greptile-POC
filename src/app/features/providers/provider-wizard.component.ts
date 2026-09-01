@@ -40,6 +40,13 @@ import { ApiService } from '../../core/services/api.service';
               <mat-label>Description</mat-label>
               <textarea matInput formControlName="description" rows="3"></textarea>
             </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Provider type</mat-label>
+              <mat-select formControlName="providerType">
+                <mat-option value="REMOTE_HTTP">Remote HTTP MCP</mat-option>
+                <mat-option value="STDIO_BRIDGE">stdio bridge</mat-option>
+              </mat-select>
+            </mat-form-field>
             <button mat-button matStepperNext>Next</button>
           </form>
         </mat-step>
