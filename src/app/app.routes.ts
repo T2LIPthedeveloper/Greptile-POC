@@ -8,6 +8,7 @@ import { ProviderDetailComponent } from './features/providers/provider-detail.co
 import { GatewayTestComponent } from './features/gateway-test/gateway-test.component';
 import { ConsumersComponent } from './features/consumers/consumers.component';
 import { SubscriptionsComponent } from './features/subscriptions/subscriptions.component';
+import { FederationPeersComponent } from './features/federation/federation-peers.component';
 import { AuditLogComponent } from './features/audit/audit-log.component';
 import { ApprovalsComponent } from './features/approvals/approvals.component';
 import { SkillsComponent } from './features/skills/skills.component';
