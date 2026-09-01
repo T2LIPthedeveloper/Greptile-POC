@@ -43,6 +43,16 @@ public class VersionController {
         return versionService.createVersion(providerId, request);
     }
 
+    @PostMapping("/{versionId}/publish")
+    public VersionResponse publish(@PathVariable UUID providerId, @PathVariable UUID versionId) {
+        return versionService.publishVersion(providerId, versionId);
+    }
+
+    @PostMapping("/{versionId}/deprecate")
+    public VersionResponse deprecate(@PathVariable UUID providerId, @PathVariable UUID versionId) {
+        return versionService.deprecateVersion(providerId, versionId);
+    }
+
     @PostMapping("/{versionId}/endpoints")
     public EndpointResponse addEndpoint(
             @PathVariable UUID providerId,

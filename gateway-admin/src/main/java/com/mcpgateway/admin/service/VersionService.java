@@ -9,6 +9,7 @@ import com.mcpgateway.admin.dto.ToolContractResponse;
 import com.mcpgateway.admin.dto.VersionResponse;
 import com.mcpgateway.common.domain.ContractSource;
 import com.mcpgateway.common.domain.VersionStatus;
+import java.time.Instant;
 import com.mcpgateway.common.exception.ConflictException;
 import com.mcpgateway.common.exception.ResourceNotFoundException;
 import com.mcpgateway.domain.entity.McpEndpoint;
@@ -74,6 +75,29 @@ public class VersionService {
         version.setProtocolVersion(request.protocolVersion() != null ? request.protocolVersion() : "2025-11-25");
         version.setChangelog(request.changelog());
         version.setStatus(VersionStatus.DRAFT);
+        versionRepository.save(version);
+        return toResponse(version);
+    }
+
+    @Transactional
+    public VersionResponse publishVersion(UUID providerId, UUID versionId) {
+        McpVersion version = findDraftVersion(providerId, versionId);
+        if (endpointRepository.findByVersionId(versionId).isEmpty()) {
+            throw new ConflictException("Cannot publish version without endpoint");
+        }
+        version.setStatus(VersionStatus.PUBLISHED);
+        version.setPublishedAt(Instant.now());
+        versionRepository.save(version);
+        return toResponse(version);
+    }
+
+    @Transactional
+    public VersionResponse deprecateVersion(UUID providerId, UUID versionId) {
+        McpVersion version = findVersion(providerId, versionId);
+        if (version.getStatus() != VersionStatus.PUBLISHED) {
+            throw new ConflictException("Only published versions can be deprecated");
+        }
+        version.setStatus(VersionStatus.DEPRECATED);
         versionRepository.save(version);
         return toResponse(version);
     }
