@@ -51,6 +51,7 @@ import { ApiService } from '../../core/services/api.service';
               <mat-select formControlName="transport">
                 <mat-option value="STREAMABLE_HTTP">Streamable HTTP</mat-option>
                 <mat-option value="LEGACY_SSE">Legacy SSE</mat-option>
+                <mat-option value="STDIO_BRIDGE">stdio bridge</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
@@ -133,6 +134,7 @@ export class ProviderWizardComponent {
     slug: ['', [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)]],
     displayName: ['', Validators.required],
     description: [''],
+    providerType: ['REMOTE_HTTP', Validators.required],
   });
 
   endpointForm = this.fb.nonNullable.group({

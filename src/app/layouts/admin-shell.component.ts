@@ -40,6 +40,18 @@ import { AuthService } from '../core/services/auth.service';
             <mat-icon matListItemIcon>public</mat-icon>
             <span matListItemTitle>Federation Peers</span>
           </a>
+          <a mat-list-item routerLink="/approvals" routerLinkActive="active">
+            <mat-icon matListItemIcon>inbox</mat-icon>
+            <span matListItemTitle>Approvals</span>
+          </a>
+          <a mat-list-item routerLink="/audit" routerLinkActive="active">
+            <mat-icon matListItemIcon>history</mat-icon>
+            <span matListItemTitle>Audit Log</span>
+          </a>
+          <a mat-list-item routerLink="/skills" routerLinkActive="active">
+            <mat-icon matListItemIcon>auto_awesome</mat-icon>
+            <span matListItemTitle>Skills</span>
+          </a>
           <a mat-list-item routerLink="/gateway-test" routerLinkActive="active">
             <mat-icon matListItemIcon>science</mat-icon>
             <span matListItemTitle>Gateway Test</span>
