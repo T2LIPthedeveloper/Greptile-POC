@@ -76,7 +76,14 @@ export class ApiService {
   }
 
   createCredential(body: CreateCredentialRequest) {
-    return this.http.post(`${this.base}/credentials`, body);
+    return this.http.post<{ id: string }>(`${this.base}/credentials`, body);
+  }
+
+  linkCredential(providerId: string, versionId: string, credentialId: string) {
+    return this.http.post(`${this.base}/providers/${providerId}/versions/${versionId}/credentials`, {
+      credentialId,
+      usage: 'UPSTREAM_AUTH',
+    });
   }
 
   createSubscription(consumerId: string, body: { providerId: string; versionId?: string }) {
