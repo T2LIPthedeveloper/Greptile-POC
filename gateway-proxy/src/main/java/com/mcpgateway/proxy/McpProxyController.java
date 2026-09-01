@@ -20,32 +20,23 @@ public class McpProxyController {
 
     private final RouteResolver routeResolver;
     private final SessionManager sessionManager;
-<<<<<<< HEAD
     private final PolicyEngine policyEngine;
     private final ProxyAuditService proxyAuditService;
-=======
     private final RateLimitService rateLimitService;
->>>>>>> cafbb55 (Phase E: Redis rate limiting and Prometheus metrics on proxy)
     private final WebClient webClient;
 
     public McpProxyController(
             RouteResolver routeResolver,
             SessionManager sessionManager,
-<<<<<<< HEAD
             PolicyEngine policyEngine,
             ProxyAuditService proxyAuditService,
+            RateLimitService rateLimitService,
             WebClient upstreamWebClient) {
         this.routeResolver = routeResolver;
         this.sessionManager = sessionManager;
         this.policyEngine = policyEngine;
         this.proxyAuditService = proxyAuditService;
-=======
-            RateLimitService rateLimitService,
-            WebClient upstreamWebClient) {
-        this.routeResolver = routeResolver;
-        this.sessionManager = sessionManager;
         this.rateLimitService = rateLimitService;
->>>>>>> cafbb55 (Phase E: Redis rate limiting and Prometheus metrics on proxy)
         this.webClient = upstreamWebClient;
     }
 
@@ -58,6 +49,7 @@ public class McpProxyController {
             @RequestHeader(value = "MCP-Protocol-Version", required = false) String protocolVersion,
             @RequestHeader(value = "X-Correlation-Id", required = false) String correlationId,
             @RequestHeader(value = "Origin", required = false) String origin) {
+        rateLimitService.check(orgSlug + ":" + providerSlug);
         RouteResolver.ResolvedRoute route = routeResolver.resolve(orgSlug, providerSlug);
 
         if (policyEngine.isToolDenied(route.providerId(), body)) {
@@ -66,13 +58,7 @@ public class McpProxyController {
                     .body("{\"error\":\"Tool denied by access policy\"}"));
         }
 
-<<<<<<< HEAD
         proxyAuditService.recordToolCall(route.orgId(), route.providerId(), extractTool(body), correlationId);
-=======
-        rateLimitService.check(orgSlug + ":" + providerSlug);
-
-        RouteResolver.ResolvedRoute route = routeResolver.resolve(orgSlug, providerSlug);
->>>>>>> cafbb55 (Phase E: Redis rate limiting and Prometheus metrics on proxy)
         String targetUrl = route.upstreamBaseUrl();
 
         WebClient.RequestBodySpec spec = webClient.post()

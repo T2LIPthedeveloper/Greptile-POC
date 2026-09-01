@@ -22,16 +22,19 @@ public class ApprovalService {
     private final McpVersionRepository versionRepository;
     private final UsageMeteringService usageMeteringService;
     private final AuditService auditService;
+    private final ContractNormalizationService normalizationService;
 
     public ApprovalService(
             PublishApprovalRepository approvalRepository,
             McpVersionRepository versionRepository,
             UsageMeteringService usageMeteringService,
-            AuditService auditService) {
+            AuditService auditService,
+            ContractNormalizationService normalizationService) {
         this.approvalRepository = approvalRepository;
         this.versionRepository = versionRepository;
         this.usageMeteringService = usageMeteringService;
         this.auditService = auditService;
+        this.normalizationService = normalizationService;
     }
 
     public List<ApprovalResponse> listPending() {
@@ -58,6 +61,8 @@ public class ApprovalService {
         approval.setReviewedAt(Instant.now());
         approval.setNotes(notes);
         approvalRepository.save(approval);
+
+        normalizationService.normalizeVersion(version.getId());
 
         version.setStatus(VersionStatus.PUBLISHED);
         version.setPublishedAt(Instant.now());

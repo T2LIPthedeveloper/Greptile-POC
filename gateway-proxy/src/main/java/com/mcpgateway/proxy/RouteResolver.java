@@ -28,6 +28,7 @@ public class RouteResolver {
     private final VersionCredentialRepository versionCredentialRepository;
     private final CredentialVaultRepository credentialVaultRepository;
     private final CredentialEncryptor encryptor;
+    private final FederationRouter federationRouter;
 
     public RouteResolver(
             OrganizationRepository organizationRepository,
@@ -36,7 +37,8 @@ public class RouteResolver {
             McpEndpointRepository endpointRepository,
             VersionCredentialRepository versionCredentialRepository,
             CredentialVaultRepository credentialVaultRepository,
-            CredentialEncryptor encryptor) {
+            CredentialEncryptor encryptor,
+            FederationRouter federationRouter) {
         this.organizationRepository = organizationRepository;
         this.providerRepository = providerRepository;
         this.versionRepository = versionRepository;
@@ -44,6 +46,7 @@ public class RouteResolver {
         this.versionCredentialRepository = versionCredentialRepository;
         this.credentialVaultRepository = credentialVaultRepository;
         this.encryptor = encryptor;
+        this.federationRouter = federationRouter;
     }
 
     public ResolvedRoute resolve(String orgSlug, String providerSlug) {
@@ -64,11 +67,12 @@ public class RouteResolver {
                 .orElseThrow(() -> new ResourceNotFoundException("No endpoint configured"));
 
         String upstreamAuth = resolveUpstreamAuth(version.getId());
+        String upstreamUrl = federationRouter.resolveUpstreamUrl(org.getId(), endpoint.getBaseUrl());
 
         return new ResolvedRoute(
                 org.getId(),
                 provider.getId(),
-                endpoint.getBaseUrl(),
+                upstreamUrl,
                 upstreamAuth,
                 version.getProtocolVersion());
     }

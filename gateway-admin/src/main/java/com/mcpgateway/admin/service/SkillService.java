@@ -22,14 +22,17 @@ public class SkillService {
     private final SkillRepository skillRepository;
     private final SkillToolBindingRepository bindingRepository;
     private final AuditService auditService;
+    private final SkillDeterminismService determinismService;
 
     public SkillService(
             SkillRepository skillRepository,
             SkillToolBindingRepository bindingRepository,
-            AuditService auditService) {
+            AuditService auditService,
+            SkillDeterminismService determinismService) {
         this.skillRepository = skillRepository;
         this.bindingRepository = bindingRepository;
         this.auditService = auditService;
+        this.determinismService = determinismService;
     }
 
     public List<SkillResponse> list() {
@@ -64,14 +67,20 @@ public class SkillService {
         bindingRepository.save(binding);
     }
 
-    public Map<String, Object> invoke(UUID skillId, Map<String, Object> input) {
+    public Map<String, Object> invoke(UUID skillId, Map<String, Object> body) {
         Skill skill = findForOrg(skillId);
         List<SkillToolBinding> bindings = bindingRepository.findBySkillId(skillId);
+        String idempotencyKey = body.getOrDefault("idempotencyKey", UUID.randomUUID().toString()).toString();
+        String seed = body.getOrDefault("deterministicSeed", "default-seed").toString();
+        Map<String, Object> input = body.containsKey("input")
+                ? (Map<String, Object>) body.get("input")
+                : body;
+        Map<String, Object> ledger = determinismService.recordOrReplay(skillId, idempotencyKey, seed, input);
         return Map.of(
                 "skill", skill.getSlug(),
                 "input", input,
                 "boundTools", bindings.stream().map(SkillToolBinding::getToolName).toList(),
-                "result", "Skill invocation stub — bind tools for runtime in Phase E");
+                "ledger", ledger);
     }
 
     private Skill findForOrg(UUID skillId) {
