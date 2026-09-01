@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [angular/main, angular/phase-b, angular/phase-c, angular/phase-d, angular/phase-e]
+  pull_request:
+    branches: [angular/main, angular/phase-b, angular/phase-c, angular/phase-d, angular/phase-e]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
