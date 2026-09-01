@@ -5,6 +5,8 @@ include(
     "gateway-domain",
     "gateway-security",
     "gateway-admin",
+    "gateway-proxy",
     "gateway-migrations",
-    "admin-service"
+    "admin-service",
+    "proxy-service"
 )
