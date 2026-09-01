@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/mcp_gateway
+    driver-class-name: org.postgresql.Driver
+    username: mcp
+    password: mcp
+  jpa:
+    hibernate:
+      ddl-auto: validate

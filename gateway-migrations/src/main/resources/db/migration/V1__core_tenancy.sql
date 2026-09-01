@@ -1,0 +1,27 @@
+CREATE TABLE organizations (
+    id UUID PRIMARY KEY,
+    slug VARCHAR(64) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    org_id UUID NOT NULL REFERENCES organizations(id),
+    email VARCHAR(320) UNIQUE NOT NULL,
+    password_hash VARCHAR(255),
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_roles (
+    user_id UUID NOT NULL REFERENCES users(id),
+    org_id UUID NOT NULL REFERENCES organizations(id),
+    role VARCHAR(32) NOT NULL,
+    PRIMARY KEY (user_id, org_id, role)
+);
+
+CREATE INDEX idx_users_org ON users(org_id);

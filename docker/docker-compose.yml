@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mcp_gateway
+      POSTGRES_USER: mcp
+      POSTGRES_PASSWORD: mcp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mcp -d mcp_gateway"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  admin-service:
+    build:
+      context: ..
+      dockerfile: docker/admin-service.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      ENCRYPTION_MASTER_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      MCP_SECURITY_JWT_SECRET: dev-jwt-secret-key-min-32-bytes-long!!
+
+volumes:
+  pgdata:
