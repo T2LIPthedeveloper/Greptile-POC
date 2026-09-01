@@ -1,21 +1,16 @@
 package com.mcpgateway.domain.entity;
 
-import com.mcpgateway.common.domain.ProviderStatus;
-import com.mcpgateway.common.domain.ProviderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "mcp_providers")
-public class McpProvider {
+@Table(name = "skills")
+public class Skill {
 
     @Id
     private UUID id;
@@ -32,33 +27,20 @@ public class McpProvider {
     @Column
     private String description;
 
-    @Column(name = "owner_user_id")
-    private UUID ownerUserId;
+    @Column(nullable = false, columnDefinition = "JSON")
+    private String definition;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private ProviderStatus status;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "provider_type", nullable = false, length = 32)
-    private ProviderType providerType = ProviderType.REMOTE_HTTP;
+    private String status;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
     @PrePersist
     void onCreate() {
         if (id == null) id = UUID.randomUUID();
+        if (status == null) status = "ACTIVE";
         createdAt = Instant.now();
-        updatedAt = createdAt;
-    }
-
-    @PreUpdate
-    void onUpdate() {
-        updatedAt = Instant.now();
     }
 
     public UUID getId() { return id; }
@@ -71,12 +53,9 @@ public class McpProvider {
     public void setDisplayName(String displayName) { this.displayName = displayName; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    public UUID getOwnerUserId() { return ownerUserId; }
-    public void setOwnerUserId(UUID ownerUserId) { this.ownerUserId = ownerUserId; }
-    public ProviderStatus getStatus() { return status; }
-    public void setStatus(ProviderStatus status) { this.status = status; }
-    public ProviderType getProviderType() { return providerType; }
-    public void setProviderType(ProviderType providerType) { this.providerType = providerType; }
+    public String getDefinition() { return definition; }
+    public void setDefinition(String definition) { this.definition = definition; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
     public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
 }

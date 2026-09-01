@@ -60,7 +60,7 @@ class PhaseCIntegrationTest {
 
     @Test
     void publishWithValidationUsageAndFederationPeers() throws Exception {
-        CreateProviderRequest provider = new CreateProviderRequest("api-one", "API One", "Test");
+        CreateProviderRequest provider = new CreateProviderRequest("api-one", "API One", "Test", null);
         MvcResult providerResult = mockMvc.perform(post("/api/v1/providers")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +108,7 @@ class PhaseCIntegrationTest {
         mockMvc.perform(post("/api/v1/providers/" + providerId + "/versions/" + versionId + "/publish")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("PUBLISHED"));
+                .andExpect(jsonPath("$.status").value("PENDING_APPROVAL"));
 
         mockMvc.perform(get("/api/v1/usage/summary")
                         .header("Authorization", "Bearer " + token))
@@ -131,7 +131,7 @@ class PhaseCIntegrationTest {
 
     @Test
     void publishBlockedWhenValidationFails() throws Exception {
-        CreateProviderRequest provider = new CreateProviderRequest("api-two", "API Two", "Test");
+        CreateProviderRequest provider = new CreateProviderRequest("api-two", "API Two", "Test", null);
         MvcResult providerResult = mockMvc.perform(post("/api/v1/providers")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)

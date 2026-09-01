@@ -48,7 +48,7 @@ class ProviderIntegrationTest {
         String token = objectMapper.readTree(loginResult.getResponse().getContentAsString())
                 .get("accessToken").asText();
 
-        CreateProviderRequest provider = new CreateProviderRequest("weather-api", "Weather API", "Demo provider");
+        CreateProviderRequest provider = new CreateProviderRequest("weather-api", "Weather API", "Demo provider", null);
         mockMvc.perform(post("/api/v1/providers")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)

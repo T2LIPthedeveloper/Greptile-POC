@@ -1,5 +1,5 @@
 package com.mcpgateway.common.domain;
 
 public enum VersionStatus {
-    DRAFT, PUBLISHED, DEPRECATED, RETIRED
+    DRAFT, PENDING_APPROVAL, PUBLISHED, DEPRECATED, RETIRED
 }

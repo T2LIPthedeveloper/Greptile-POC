@@ -2,6 +2,7 @@ package com.mcpgateway.proxy;
 
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,11 +20,20 @@ public class McpProxyController {
 
     private final RouteResolver routeResolver;
     private final SessionManager sessionManager;
+    private final PolicyEngine policyEngine;
+    private final ProxyAuditService proxyAuditService;
     private final WebClient webClient;
 
-    public McpProxyController(RouteResolver routeResolver, SessionManager sessionManager, WebClient upstreamWebClient) {
+    public McpProxyController(
+            RouteResolver routeResolver,
+            SessionManager sessionManager,
+            PolicyEngine policyEngine,
+            ProxyAuditService proxyAuditService,
+            WebClient upstreamWebClient) {
         this.routeResolver = routeResolver;
         this.sessionManager = sessionManager;
+        this.policyEngine = policyEngine;
+        this.proxyAuditService = proxyAuditService;
         this.webClient = upstreamWebClient;
     }
 
@@ -34,12 +44,17 @@ public class McpProxyController {
             @RequestBody String body,
             @RequestHeader(value = "MCP-Session-Id", required = false) String sessionId,
             @RequestHeader(value = "MCP-Protocol-Version", required = false) String protocolVersion,
+            @RequestHeader(value = "X-Correlation-Id", required = false) String correlationId,
             @RequestHeader(value = "Origin", required = false) String origin) {
-        if (origin != null && !origin.isBlank()) {
-            // Basic Origin validation per MCP spec
+        RouteResolver.ResolvedRoute route = routeResolver.resolve(orgSlug, providerSlug);
+
+        if (policyEngine.isToolDenied(route.providerId(), body)) {
+            proxyAuditService.recordDenied(route.orgId(), route.providerId(), extractTool(body), correlationId);
+            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("{\"error\":\"Tool denied by access policy\"}"));
         }
 
-        RouteResolver.ResolvedRoute route = routeResolver.resolve(orgSlug, providerSlug);
+        proxyAuditService.recordToolCall(route.orgId(), route.providerId(), extractTool(body), correlationId);
         String targetUrl = route.upstreamBaseUrl();
 
         WebClient.RequestBodySpec spec = webClient.post()
@@ -75,6 +90,21 @@ public class McpProxyController {
                                     .headers(headers)
                                     .body(content));
                 });
+    }
+
+    private String extractTool(String body) {
+        try {
+            if (body.contains("tools/call") && body.contains("\"name\"")) {
+                int idx = body.indexOf("\"name\"");
+                String sub = body.substring(idx);
+                int start = sub.indexOf('"', sub.indexOf(':')) + 1;
+                int end = sub.indexOf('"', start);
+                return sub.substring(start, end);
+            }
+        } catch (Exception ignored) {
+            // ignore
+        }
+        return null;
     }
 
     @GetMapping("/mcp/{orgSlug}/{providerSlug}")

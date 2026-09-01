@@ -4,6 +4,7 @@ import com.mcpgateway.admin.dto.CreateProviderRequest;
 import com.mcpgateway.admin.dto.ProviderResponse;
 import com.mcpgateway.admin.dto.UpdateProviderRequest;
 import com.mcpgateway.common.domain.ProviderStatus;
+import com.mcpgateway.common.domain.ProviderType;
 import com.mcpgateway.common.exception.ConflictException;
 import com.mcpgateway.common.exception.ResourceNotFoundException;
 import com.mcpgateway.domain.entity.McpProvider;
@@ -50,6 +51,7 @@ public class ProviderService {
         provider.setDescription(request.description());
         provider.setOwnerUserId(user.userId());
         provider.setStatus(ProviderStatus.DRAFT);
+        provider.setProviderType(request.providerType() != null ? request.providerType() : ProviderType.REMOTE_HTTP);
         providerRepository.save(provider);
         return toResponse(provider);
     }
@@ -84,6 +86,7 @@ public class ProviderService {
                 provider.getDisplayName(),
                 provider.getDescription(),
                 provider.getStatus().name(),
+                provider.getProviderType().name(),
                 provider.getCreatedAt(),
                 provider.getUpdatedAt());
     }

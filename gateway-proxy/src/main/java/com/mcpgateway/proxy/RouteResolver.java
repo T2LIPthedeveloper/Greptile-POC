@@ -54,9 +54,9 @@ public class RouteResolver {
 
         List<McpVersion> versions = versionRepository.findByProviderId(provider.getId());
         McpVersion version = versions.stream()
-                .filter(v -> v.getStatus().name().equals("DRAFT") || v.getStatus().name().equals("PUBLISHED"))
+                .filter(v -> v.getStatus().name().equals("PUBLISHED"))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("No active version"));
+                .orElseThrow(() -> new ResourceNotFoundException("No published version"));
 
         McpEndpoint endpoint = endpointRepository.findByVersionId(version.getId()).stream()
                 .filter(McpEndpoint::isPrimary)
@@ -65,7 +65,12 @@ public class RouteResolver {
 
         String upstreamAuth = resolveUpstreamAuth(version.getId());
 
-        return new ResolvedRoute(endpoint.getBaseUrl(), upstreamAuth, version.getProtocolVersion());
+        return new ResolvedRoute(
+                org.getId(),
+                provider.getId(),
+                endpoint.getBaseUrl(),
+                upstreamAuth,
+                version.getProtocolVersion());
     }
 
     private String resolveUpstreamAuth(UUID versionId) {
@@ -82,5 +87,10 @@ public class RouteResolver {
         return encryptor.decrypt(vault.getEncryptedPayload());
     }
 
-    public record ResolvedRoute(String upstreamBaseUrl, String upstreamApiKey, String protocolVersion) {}
+    public record ResolvedRoute(
+            UUID orgId,
+            UUID providerId,
+            String upstreamBaseUrl,
+            String upstreamApiKey,
+            String protocolVersion) {}
 }

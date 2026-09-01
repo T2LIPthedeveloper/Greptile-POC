@@ -38,6 +38,7 @@ public class VersionService {
     private final VersionCredentialRepository versionCredentialRepository;
     private final ContractValidationService contractValidationService;
     private final UsageMeteringService usageMeteringService;
+    private final ApprovalService approvalService;
 
     public VersionService(
             McpProviderRepository providerRepository,
@@ -46,7 +47,8 @@ public class VersionService {
             McpToolContractRepository toolContractRepository,
             VersionCredentialRepository versionCredentialRepository,
             ContractValidationService contractValidationService,
-            UsageMeteringService usageMeteringService) {
+            UsageMeteringService usageMeteringService,
+            ApprovalService approvalService) {
         this.providerRepository = providerRepository;
         this.versionRepository = versionRepository;
         this.endpointRepository = endpointRepository;
@@ -54,6 +56,7 @@ public class VersionService {
         this.versionCredentialRepository = versionCredentialRepository;
         this.contractValidationService = contractValidationService;
         this.usageMeteringService = usageMeteringService;
+        this.approvalService = approvalService;
     }
 
     public List<VersionResponse> listVersions(UUID providerId) {
@@ -92,10 +95,10 @@ public class VersionService {
             throw new ConflictException("Cannot publish version without endpoint");
         }
         contractValidationService.assertValidForPublish(versionId);
-        version.setStatus(VersionStatus.PUBLISHED);
-        version.setPublishedAt(Instant.now());
+        version.setStatus(VersionStatus.PENDING_APPROVAL);
         versionRepository.save(version);
-        usageMeteringService.record("VERSION_PUBLISHED", "mcp_version", versionId, 1);
+        approvalService.requestApproval(versionId);
+        usageMeteringService.record("VERSION_PUBLISH_REQUESTED", "mcp_version", versionId, 1);
         return toResponse(version);
     }
 
